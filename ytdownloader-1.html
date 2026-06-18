@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Free Download Video YT</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d1a; --card: #14142b; --card2: #1a1a35;
+      --border: #2a2a4a; --accent: #e63c5c; --accent2: #ff6b6b;
+      --green: #22c55e; --green2: #16a34a;
+      --text: #e8e8f0; --muted: #7070a0; --radius: 14px;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; padding: 40px 16px 60px;
+    }
+    .header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .logo { width: 48px; height: 48px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .logo svg { width: 24px; height: 24px; fill: white; }
+    h1 { font-size: 1.7rem; font-weight: 700; }
+    h1 span { color: var(--accent); }
+    .tagline { color: var(--muted); font-size: 0.9rem; margin-bottom: 32px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; width: 100%; max-width: 560px; }
+
+    /* INPUT */
+    .input-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .input-wrap { flex: 1; display: flex; align-items: center; background: #0d0d1a; border: 1px solid var(--border); border-radius: 10px; padding: 0 14px; gap: 8px; }
+    .input-wrap svg { width: 18px; height: 18px; flex-shrink: 0; fill: var(--muted); }
+    .input-wrap input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: 0.95rem; padding: 13px 0; font-family: inherit; }
+    .input-wrap input::placeholder { color: var(--muted); }
+    .btn-cari { background: var(--accent); color: white; border: none; border-radius: 10px; padding: 0 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
+    .btn-cari:hover { background: #c42e4a; }
+    .btn-cari:active { transform: scale(0.97); }
+    .btn-cari:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* MODE TABS */
+    .mode-tabs { display: flex; gap: 6px; margin-bottom: 20px; background: #0d0d1a; border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
+    .mode-tab { flex: 1; padding: 9px; border: none; border-radius: 7px; background: transparent; color: var(--muted); font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .mode-tab svg { width: 15px; height: 15px; }
+    .mode-tab.active-video { background: var(--accent); color: white; }
+    .mode-tab.active-mp3 { background: var(--green); color: white; }
+    .mode-tab:not(.active-video):not(.active-mp3):hover { color: var(--text); }
+
+    /* QUALITY */
+    .label { font-size: 0.82rem; color: var(--muted); margin-bottom: 10px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+    .quality-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .q-btn { padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border); background: #0d0d1a; color: var(--text); font-size: 0.88rem; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .q-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .q-btn.active { background: transparent; border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .mp3-quality-row .q-btn:hover { border-color: var(--green); color: var(--green); }
+    .mp3-quality-row .q-btn.active { border-color: var(--green); color: var(--green); box-shadow: 0 0 0 1px var(--green); }
+
+    /* SECTIONS */
+    .section-video, .section-mp3 { }
+    .section-mp3 { display: none; }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    /* VIDEO INFO */
+    .video-info { display: none; }
+    .video-info.show { display: flex; gap: 14px; align-items: flex-start; }
+    .thumb-wrap img { width: 110px; border-radius: 8px; aspect-ratio: 16/9; object-fit: cover; display: block; }
+    .video-meta { flex: 1; min-width: 0; }
+    .video-title { font-size: 0.92rem; font-weight: 600; line-height: 1.4; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .video-author { font-size: 0.8rem; color: var(--muted); }
+    .video-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-top: 5px; }
+    .badge-video { background: rgba(230,60,92,0.15); color: var(--accent); }
+    .badge-mp3 { background: rgba(34,197,94,0.15); color: var(--green); }
+
+    /* SIZE INFO */
+    .size-row { display: none; align-items: center; gap: 10px; background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-top: 16px; }
+    .size-row.show { display: flex; }
+    .size-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .size-icon.video-icon { background: rgba(230,60,92,0.12); }
+    .size-icon.mp3-icon { background: rgba(34,197,94,0.12); }
+    .size-icon svg { width: 16px; height: 16px; }
+    .size-label { font-size: 0.8rem; color: var(--muted); }
+    .size-value { font-size: 1rem; font-weight: 700; color: var(--text); }
+
+    /* DOWNLOAD BUTTONS */
+    .btn-download {
+      display: none; width: 100%; margin-top: 16px; padding: 14px;
+      color: white; border: none; border-radius: 10px;
+      font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: opacity 0.2s, transform 0.1s;
+      align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-download.show { display: flex; }
+    .btn-download:hover { opacity: 0.88; }
+    .btn-download:active { transform: scale(0.98); }
+    .btn-download:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-download svg { width: 18px; height: 18px; fill: white; }
+    .btn-download.video-dl { background: linear-gradient(135deg, var(--accent), #c42e4a); }
+    .btn-download.mp3-dl { background: linear-gradient(135deg, var(--green), var(--green2)); }
+
+    /* PROGRESS */
+    .progress-wrap { display: none; margin-top: 12px; }
+    .progress-wrap.show { display: block; }
+    .progress-bar-bg { background: var(--border); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; width: 0%; border-radius: 99px; transition: width 0.3s; }
+    .progress-bar-fill.video-fill { background: var(--accent); }
+    .progress-bar-fill.mp3-fill { background: var(--green); }
+    .progress-text { font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+
+    /* ERROR */
+    .error-msg { display: none; background: rgba(230,60,92,0.1); border: 1px solid rgba(230,60,92,0.3); border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; color: var(--accent2); margin-top: 14px; }
+    .error-msg.show { display: block; }
+
+    footer { margin-top: 32px; font-size: 0.78rem; color: var(--muted); text-align: center; line-height: 1.8; }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 1.35rem; }
+      .input-row { flex-direction: column; }
+      .btn-cari { padding: 13px; }
+      .card { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+  </div>
+  <h1>Free <span>Download Video YT</span></h1>
+</div>
+<p class="tagline">Dengan gratis dan tanpa iklan 🎉</p>
+
+<div class="card">
+
+  <!-- INPUT -->
+  <div class="input-row">
+    <div class="input-wrap">
+      <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="url" id="urlInput" placeholder="Tempel link YouTube di sini..." />
+    </div>
+    <button class="btn-cari" id="btnCari" onclick="fetchInfo()">Cari</button>
+  </div>
+
+  <!-- MODE TABS -->
+  <div class="mode-tabs">
+    <button class="mode-tab active-video" id="tabVideo" onclick="setMode('video')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 10l4.553-2.276A1 1 0 0 1 21 8.723v6.554a1 1 0 0 1-1.447.894L15 14v-4zM3 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/></svg>
+      Video MP4
+    </button>
+    <button class="mode-tab" id="tabMp3" onclick="setMode('mp3')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      Audio MP3
+    </button>
+  </div>
+
+  <!-- VIDEO SECTION -->
+  <div class="section-video" id="sectionVideo">
+    <div class="label">Pilih Kualitas Video</div>
+    <div class="quality-row" id="videoQualityRow">
+      <button class="q-btn" onclick="setQuality(this,'360')">360p</button>
+      <button class="q-btn" onclick="setQuality(this,'480')">480p</button>
+      <button class="q-btn active" onclick="setQuality(this,'720')">720p HD</button>
+      <button class="q-btn" onclick="setQuality(this,'1080')">1080p FHD</button>
+    </div>
+  </div>
+
+  <!-- MP3 SECTION -->
+  <div class="section-mp3" id="sectionMp3">
+    <div class="label">Pilih Kualitas Audio</div>
+    <div class="quality-row mp3-quality-row" id="mp3QualityRow">
+      <button class="q-btn" onclick="setMp3Quality(this,'64')">64 kbps</button>
+      <button class="q-btn active" onclick="setMp3Quality(this,'128')">128 kbps</button>
+      <button class="q-btn" onclick="setMp3Quality(this,'192')">192 kbps</button>
+      <button class="q-btn" onclick="setMp3Quality(this,'320')">320 kbps HQ</button>
+    </div>
+  </div>
+
+  <hr class="divider" id="divider" style="display:none"/>
+
+  <!-- VIDEO INFO -->
+  <div class="video-info" id="videoInfo">
+    <div class="thumb-wrap">
+      <img id="thumbImg" src="" alt="thumbnail"/>
+    </div>
+    <div class="video-meta">
+      <div class="video-title" id="videoTitle"></div>
+      <div class="video-author" id="videoAuthor"></div>
+      <span class="video-badge badge-video" id="modeBadge">MP4</span>
+    </div>
+  </div>
+
+  <!-- FILE SIZE -->
+  <div class="size-row" id="sizeRow">
+    <div class="size-icon video-icon" id="sizeIcon">
+      <svg viewBox="0 0 24 24" fill="var(--accent)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="white" stroke-width="2"/></svg>
+    </div>
+    <div>
+      <div class="size-label" id="sizeLabel">Ukuran File</div>
+      <div id="sizeValue" class="size-value">—</div>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- DOWNLOAD VIDEO BTN -->
+  <button class="btn-download video-dl" id="btnDownloadVideo" onclick="startDownload('video')">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="15" x2="12" y2="3" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+    Download 720p
+  </button>
+
+  <!-- DOWNLOAD MP3 BTN -->
+  <button class="btn-download mp3-dl" id="btnDownloadMp3" onclick="startDownload('mp3')" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    Download MP3 128kbps
+  </button>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill video-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+  </div>
+
+</div>
+
+<footer>
+  Powered by Sonzai X API · Web By- BANG RZ🫠 · Hanya untuk keperluan pribadi
+</footer>
+
+<script>
+  const BASE_INFO   = "https://api.sonzaix.indevs.in/youtube/info";
+  const BASE_DL     = "https://api.sonzaix.indevs.in/youtube/download";
+  const BASE_SERVER = window.location.origin; // server Railway kamu sendiri
+
+  let currentMode     = "video"; // 'video' | 'mp3'
+  let selectedQuality = "720";
+  let selectedMp3Q    = "128";
+  let currentUrl      = "";
+  let videoDuration   = 0;
+  let directVideoUrl  = "";
+  let directMp3Url    = "";
+  let videoFilename   = "";
+  let mp3Filename     = "";
+
+  const BITRATE_VIDEO = { "360": 400, "480": 700, "720": 1400, "1080": 2800 };
+  const BITRATE_MP3   = { "64": 64,  "128": 128, "192": 192,  "320": 320   };
+
+  /* ---- MODE ---- */
+  function setMode(mode) {
+    currentMode = mode;
+    const isVideo = mode === "video";
+
+    document.getElementById("tabVideo").className = "mode-tab" + (isVideo ? " active-video" : "");
+    document.getElementById("tabMp3").className   = "mode-tab" + (!isVideo ? " active-mp3" : "");
+    document.getElementById("sectionVideo").style.display = isVideo ? "" : "none";
+    document.getElementById("sectionMp3").style.display   = isVideo ? "none" : "";
+    document.getElementById("btnDownloadVideo").style.display = "none";
+    document.getElementById("btnDownloadMp3").style.display   = "none";
+
+    // Update badge & size icon
+    if (document.getElementById("videoInfo").classList.contains("show")) {
+      updateBadgeAndSize();
+      showEstimatedSize();
+      refreshLinks();
+    }
+  }
+
+  function updateBadgeAndSize() {
+    const isVideo = currentMode === "video";
+    const badge   = document.getElementById("modeBadge");
+    const icon    = document.getElementById("sizeIcon");
+    const label   = document.getElementById("sizeLabel");
+    badge.textContent  = isVideo ? "MP4" : "MP3";
+    badge.className    = "video-badge " + (isVideo ? "badge-video" : "badge-mp3");
+    icon.className     = "size-icon " + (isVideo ? "video-icon" : "mp3-icon");
+    icon.innerHTML     = isVideo
+      ? `<svg viewBox="0 0 24 24" fill="var(--accent)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="white" stroke-width="2"/></svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+    label.textContent  = isVideo ? "Ukuran File" : "Ukuran Audio";
+    document.getElementById("progressFill").className = "progress-bar-fill " + (isVideo ? "video-fill" : "mp3-fill");
+  }
+
+  /* ---- QUALITY ---- */
+  function setQuality(el, q) {
+    document.querySelectorAll("#videoQualityRow .q-btn").forEach(b => b.classList.remove("active"));
+    el.classList.add("active");
+    selectedQuality = q;
+    directVideoUrl = "";
+    if (currentUrl && currentMode === "video") { showEstimatedSize(); refreshLinks(); }
+  }
+
+  function setMp3Quality(el, q) {
+    document.querySelectorAll("#mp3QualityRow .q-btn").forEach(b => b.classList.remove("active"));
+    el.classList.add("active");
+    selectedMp3Q = q;
+    directMp3Url = "";
+    if (currentUrl && currentMode === "mp3") { showEstimatedSize(); refreshLinks(); }
+  }
+
+  /* ---- SIZE ESTIMATE ---- */
+  function showEstimatedSize() {
+    const sizeRow = document.getElementById("sizeRow");
+    const sizeVal = document.getElementById("sizeValue");
+    sizeRow.classList.add("show");
+    updateBadgeAndSize();
+    if (currentMode === "video") {
+      if (videoDuration > 0) {
+        const bytes = (BITRATE_VIDEO[selectedQuality] || 1400) * 1000 / 8 * videoDuration;
+        sizeVal.textContent = "~" + formatBytes(bytes);
+      } else {
+        const map = { "360": "<100 MB", "480": "~150 MB", "720": "~300 MB", "1080": "~600 MB" };
+        sizeVal.textContent = "±" + (map[selectedQuality] || "—");
+      }
+    } else {
+      if (videoDuration > 0) {
+        const bytes = (BITRATE_MP3[selectedMp3Q] || 128) * 1000 / 8 * videoDuration;
+        sizeVal.textContent = "~" + formatBytes(bytes);
+      } else {
+        const map = { "64": "~3 MB/mnt", "128": "~5 MB/mnt", "192": "~7 MB/mnt", "320": "~12 MB/mnt" };
+        sizeVal.textContent = map[selectedMp3Q] || "—";
+      }
+    }
+  }
+
+  /* ---- FETCH INFO ---- */
+  function showError(msg) { const e = document.getElementById("errorMsg"); e.textContent = msg; e.classList.add("show"); }
+  function hideError() { document.getElementById("errorMsg").classList.remove("show"); }
+
+  async function fetchInfo() {
+    const input = document.getElementById("urlInput").value.trim();
+    if (!input) { showError("Masukkan link YouTube terlebih dahulu."); return; }
+    if (!input.includes("youtube.com") && !input.includes("youtu.be")) { showError("Link tidak valid."); return; }
+
+    hideError();
+    currentUrl = input;
+    directVideoUrl = directMp3Url = "";
+    const btn = document.getElementById("btnCari");
+    btn.disabled = true; btn.textContent = "Mencari...";
+
+    // Reset UI
+    document.getElementById("videoInfo").classList.remove("show");
+    document.getElementById("divider").style.display = "none";
+    document.getElementById("btnDownloadVideo").classList.remove("show");
+    document.getElementById("btnDownloadVideo").style.display = "none";
+    document.getElementById("btnDownloadMp3").style.display = "none";
+    document.getElementById("sizeRow").classList.remove("show");
+    document.getElementById("progressWrap").classList.remove("show");
+
+    try {
+      const res  = await fetch(`${BASE_INFO}?url=${encodeURIComponent(input)}`);
+      const data = await res.json();
+      if (data.status !== "success") throw new Error("Video tidak ditemukan.");
+
+      document.getElementById("thumbImg").src         = data.thumbnail;
+      document.getElementById("videoTitle").textContent = data.title;
+      document.getElementById("videoAuthor").textContent = data.author;
+      videoDuration = data.duration || 0;
+
+      document.getElementById("videoInfo").classList.add("show");
+      document.getElementById("divider").style.display = "";
+      showEstimatedSize();
+      refreshLinks();
+    } catch (e) {
+      showError(e.message || "Terjadi kesalahan. Coba lagi.");
+    } finally {
+      btn.disabled = false; btn.textContent = "Cari";
+    }
+  }
+
+  /* ---- REFRESH LINKS (background fetch) ---- */
+  async function refreshLinks() {
+    const btnV = document.getElementById("btnDownloadVideo");
+    const btnM = document.getElementById("btnDownloadMp3");
+
+    if (currentMode === "video") {
+      btnV.disabled = true;
+      btnV.innerHTML = iconDl() + ` Menyiapkan ${selectedQuality}p...`;
+      btnV.classList.add("show"); btnV.style.display = "";
+      btnM.style.display = "none";
+
+      try {
+        const url  = `${BASE_DL}?url=${encodeURIComponent(currentUrl)}&format=mp4&quality=${selectedQuality}&audioBitrate=128&vCodec=h264`;
+        const data = await (await fetch(url)).json();
+        if (data.status === "success" && data.download_link) {
+          directVideoUrl = data.download_link;
+          videoFilename  = data.filename || "";
+        }
+      } catch(e) {}
+
+      btnV.disabled = false;
+      btnV.innerHTML = iconDl() + ` Download ${selectedQuality}p`;
+    } else {
+      btnM.disabled = true;
+      btnM.innerHTML = iconMusic() + ` Menyiapkan MP3 ${selectedMp3Q}kbps...`;
+      btnM.style.display = "flex";
+      btnV.style.display = "none";
+
+      // MP3 pakai server sendiri — link langsung dengan Content-Length
+      directMp3Url = `${BASE_SERVER}/api/mp3?url=${encodeURIComponent(currentUrl)}&bitrate=${selectedMp3Q}`;
+      mp3Filename  = "";
+
+      // Cek ukuran file nyata via HEAD ke server kita sendiri
+      try {
+        const head = await fetch(directMp3Url, { method: "HEAD" });
+        const cl   = head.headers.get("Content-Length");
+        const sizeVal = document.getElementById("sizeValue");
+        if (cl && parseInt(cl) > 0) {
+          sizeVal.textContent = formatBytes(parseInt(cl));
+        }
+        // Ambil filename dari header jika ada
+        const cd = head.headers.get("Content-Disposition") || "";
+        const m  = cd.match(/filename="?([^"]+)"?/);
+        if (m) mp3Filename = m[1];
+      } catch(e) { /* pakai estimasi */ }
+
+      btnM.disabled = false;
+      btnM.innerHTML = iconMusic() + ` Download MP3 ${selectedMp3Q}kbps`;
+    }
+  }
+
+  /* ---- DOWNLOAD ---- */
+  async function startDownload(type) {
+    const isVideo = type === "video";
+    const btn     = document.getElementById(isVideo ? "btnDownloadVideo" : "btnDownloadMp3");
+    const prog    = document.getElementById("progressWrap");
+    const fill    = document.getElementById("progressFill");
+    const text    = document.getElementById("progressText");
+
+    let link = isVideo ? directVideoUrl : directMp3Url;
+
+    // Kalau link belum ada, fetch dulu
+    if (!link) {
+      btn.disabled = true;
+      btn.innerHTML = (isVideo ? iconDl() : iconMusic()) + " Menyiapkan...";
+      try {
+        const apiUrl = isVideo
+          ? `${BASE_DL}?url=${encodeURIComponent(currentUrl)}&format=mp4&quality=${selectedQuality}&audioBitrate=128&vCodec=h264`
+          : `${BASE_DL}?url=${encodeURIComponent(currentUrl)}&format=mp3&audioBitrate=${selectedMp3Q}`;
+        const data = await (await fetch(apiUrl)).json();
+        if (!data.download_link) throw new Error();
+        link = data.download_link;
+        if (isVideo) { directVideoUrl = link; videoFilename = data.filename || ""; }
+        else         { directMp3Url   = link; mp3Filename   = data.filename || ""; }
+      } catch {
+        showError("Gagal mendapatkan link. Coba lagi.");
+        btn.disabled = false;
+        btn.innerHTML = (isVideo ? iconDl() : iconMusic()) + (isVideo ? ` Download ${selectedQuality}p` : ` Download MP3 ${selectedMp3Q}kbps`);
+        return;
+      }
+    }
+
+    // MP3: stream dari server sendiri dengan progress bar
+    if (!isVideo) {
+      const link = directMp3Url || `${BASE_SERVER}/api/mp3?url=${encodeURIComponent(currentUrl)}&bitrate=${selectedMp3Q}`;
+      btn.disabled = true;
+      btn.innerHTML = iconMusic() + " Mengunduh...";
+      prog.classList.add("show");
+      fill.className = "progress-bar-fill mp3-fill";
+      fill.style.width = "0%";
+      text.textContent = "Memulai download MP3...";
+
+      try {
+        const res = await fetch(link);
+        if (!res.ok) throw new Error("Gagal");
+        const total  = parseInt(res.headers.get("Content-Length") || "0");
+        const reader = res.body.getReader();
+        const chunks = [];
+        let received = 0;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          received += value.length;
+          if (total > 0) {
+            const pct = Math.min(Math.round(received / total * 100), 100);
+            fill.style.width = pct + "%";
+            text.textContent = `${formatBytes(received)} / ${formatBytes(total)} (${pct}%)`;
+          } else {
+            fill.style.width = "60%";
+            text.textContent = `Mengunduh... ${formatBytes(received)}`;
+          }
+        }
+
+        fill.style.width = "100%";
+        const blob = new Blob(chunks, { type: "audio/mpeg" });
+        const title = document.getElementById("videoTitle").textContent || "audio";
+        const fname = mp3Filename || title.replace(/[^\w\s]/gi,'').trim().replace(/\s+/g,'_') + `_${selectedMp3Q}kbps.mp3`;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = fname;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        text.textContent = `✅ MP3 ${selectedMp3Q}kbps berhasil diunduh!`;
+      } catch(e) {
+        showError("Gagal download MP3. Coba lagi.");
+        prog.classList.remove("show");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = iconMusic() + ` Download MP3 ${selectedMp3Q}kbps`;
+      }
+      return;
+    }
+
+    // VIDEO: pakai window.open ke Sonzai CDN
+  }
+
+  /* ---- HELPERS ---- */
+  function formatBytes(b) {
+    if (!b) return "—";
+    const k = 1024, s = ["B","KB","MB","GB"];
+    const i = Math.floor(Math.log(b) / Math.log(k));
+    return (b / Math.pow(k, i)).toFixed(1) + " " + s[i];
+  }
+  function iconDl() {
+    return `<svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="15" x2="12" y2="3" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`;
+  }
+  function iconMusic() {
+    return `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+  }
+
+  document.getElementById("urlInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") fetchInfo();
+  });
+</script>
+</body>
+</html>
