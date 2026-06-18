@@ -304,7 +304,7 @@
     </div>
     <div class="logo-text">Free <span>Download Video YT</span></div>
   </div>
-  <p>Dengan gratis dan tanpa iklan 🎉</p>
+  <p>Dengan gratis dan tanpa iklan ðŸŽ‰</p>
 </header>
 
 <div class="card">
@@ -335,9 +335,9 @@
         <span class="play-badge" id="quality-badge">720p</span>
       </div>
       <div class="video-meta">
-        <div class="video-title" id="vid-title">—</div>
-        <div class="video-channel" id="vid-channel">—</div>
-        <div id="vid-size" style="margin-top:6px;font-size:12px;color:#30d158;">📦 <span id="size-text">Menghitung...</span></div>
+        <div class="video-title" id="vid-title">â€”</div>
+        <div class="video-channel" id="vid-channel">â€”</div>
+        <div id="vid-size" style="margin-top:6px;font-size:12px;color:#30d158;">ðŸ“¦ <span id="size-text">Menghitung...</span></div>
       </div>
     </div>
     <a class="btn-download" id="btn-dl" href="#" target="_blank" rel="noopener">
@@ -391,7 +391,7 @@
     }
 
     const encodedUrl = encodeURIComponent(urlInput);
-    const apiUrl = `/api/download?url=${encodedUrl}&quality=${selectedQuality}`;
+    const apiUrl = `https://api.sonzaix.indevs.in/youtube/download?url=${encodedUrl}&format=mp4&quality=${selectedQuality}&audioBitrate=128&vCodec=h264`;
 
     btn.disabled = true;
     statusEl.style.display = 'block';
@@ -413,7 +413,7 @@
       const sizeEl = document.getElementById('vid-size');
       const sizeTxt = document.getElementById('size-text');
 
-      // Selalu tampilkan ukuran — real atau estimasi
+      // Selalu tampilkan ukuran â€” real atau estimasi
       const bitrateMap = { '360': 500, '480': 1000, '720': 2500, '1080': 5000 };
       const bitrate = bitrateMap[selectedQuality] || 2500;
       const durasiDetik = data.duration_seconds || 240;
@@ -422,12 +422,12 @@
       const detik = durasiDetik % 60;
       const durasiStr = data.duration_seconds
         ? menit + ':' + String(detik).padStart(2, '0') + ' mnt'
-        : '±4 mnt';
+        : 'Â±4 mnt';
 
       if (data.file_size_mb) {
-        sizeTxt.textContent = data.file_size_mb + ' MB · ' + durasiStr;
+        sizeTxt.textContent = data.file_size_mb + ' MB Â· ' + durasiStr;
       } else {
-        sizeTxt.textContent = '~' + estimasiMB + ' MB · ' + durasiStr;
+        sizeTxt.textContent = '~' + estimasiMB + ' MB Â· ' + durasiStr;
       }
       sizeEl.style.display = 'block';
 
@@ -442,7 +442,7 @@
 
   function showError(msg) {
     const el = document.getElementById('error-msg');
-    el.textContent = '⚠️ ' + msg;
+    el.textContent = 'âš ï¸ ' + msg;
     el.style.display = 'block';
   }
 
@@ -450,7 +450,7 @@
     if (e.key === 'Enter') fetchVideo();
   });
 </script>
-<footer>Powered by Sonzai X API &nbsp;·&nbsp; Web By- BANG RZ🤭 &nbsp;·&nbsp; Hanya untuk keperluan pribadi</footer>
+<footer>Powered by Sonzai X API &nbsp;Â·&nbsp; Web By- BANG RZðŸ¤­ &nbsp;Â·&nbsp; Hanya untuk keperluan pribadi</footer>
 
 </body>
 </html>
