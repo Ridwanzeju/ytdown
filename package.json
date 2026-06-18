@@ -1,0 +1,17 @@
+{
+  "name": "ytdown",
+  "version": "1.0.0",
+  "description": "Free YouTube Video Downloader - Web By BANG RZ",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "express": "^4.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}
