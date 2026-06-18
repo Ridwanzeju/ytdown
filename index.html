@@ -409,14 +409,32 @@
       document.getElementById('quality-badge').textContent = selectedQuality + 'p';
       document.getElementById('btn-dl').href = data.download_link;
 
-      // Tampilkan ukuran file real dari backend
+      // Tampilkan ukuran file dari durasi real + kualitas
       const sizeEl = document.getElementById('vid-size');
       const sizeTxt = document.getElementById('size-text');
+
       if (data.file_size_mb) {
+        // Ukuran real dari server
         sizeTxt.textContent = data.file_size_mb + ' MB';
         sizeEl.style.display = 'block';
       } else {
-        sizeEl.style.display = 'none';
+        // Estimasi dari durasi video + bitrate kualitas
+        const bitrateMap = { '360': 500, '480': 1000, '720': 2500, '1080': 5000 };
+        const bitrate = bitrateMap[selectedQuality] || 2500;
+
+        // Gunakan durasi real dari backend jika ada
+        const durasiDetik = data.duration_seconds || 240;
+        const estimasiMB = ((bitrate * durasiDetik) / 8 / 1024).toFixed(1);
+
+        // Format durasi untuk ditampilkan
+        const menit = Math.floor(durasiDetik / 60);
+        const detik = durasiDetik % 60;
+        const durasiStr = data.duration_seconds
+          ? menit + ':' + String(detik).padStart(2, '0') + ' menit'
+          : '±4 menit';
+
+        sizeTxt.textContent = '~' + estimasiMB + ' MB · ' + durasiStr;
+        sizeEl.style.display = 'block';
       }
 
       resultEl.style.display = 'block';

@@ -27,42 +27,25 @@ app.get('/api/download', async (req, res) => {
 
     const data = response.data;
 
-    // Coba ambil ukuran file real
-    if (data.download_link) {
-      let fileSizeMb = null;
-
-      // Cara 1: HEAD request
+    // Ambil durasi video dari YouTube oEmbed API (gratis, tanpa key)
+    if (url) {
       try {
-        const headRes = await axios.head(data.download_link, {
+        const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+        const oembedRes = await axios.get(oembedUrl, { timeout: 5000 });
+        // oEmbed tidak ada durasi, pakai ytdl info sebagai fallback
+      } catch (e) {}
+
+      // Coba ambil durasi dari halaman YouTube langsung
+      try {
+        const ytRes = await axios.get(`https://www.youtube.com/watch?v=${extractVideoId(url)}`, {
           timeout: 8000,
           headers: { 'User-Agent': 'Mozilla/5.0' }
         });
-        const cl = headRes.headers['content-length'];
-        if (cl) fileSizeMb = (parseInt(cl) / (1024 * 1024)).toFixed(1);
+        const durationMatch = ytRes.data.match(/"lengthSeconds":"(\d+)"/);
+        if (durationMatch) {
+          data.duration_seconds = parseInt(durationMatch[1]);
+        }
       } catch (e) {}
-
-      // Cara 2: GET dengan Range jika HEAD gagal
-      if (!fileSizeMb) {
-        try {
-          const rangeRes = await axios.get(data.download_link, {
-            timeout: 8000,
-            headers: { 'Range': 'bytes=0-0', 'User-Agent': 'Mozilla/5.0' },
-            responseType: 'stream'
-          });
-          // Cek Content-Range: bytes 0-0/TOTAL
-          const cr = rangeRes.headers['content-range'];
-          if (cr) {
-            const match = cr.match(/\/(\d+)$/);
-            if (match) fileSizeMb = (parseInt(match[1]) / (1024 * 1024)).toFixed(1);
-          }
-          // Atau content-length di response
-          const cl = rangeRes.headers['content-length'];
-          if (!fileSizeMb && cl) fileSizeMb = (parseInt(cl) / (1024 * 1024)).toFixed(1);
-          rangeRes.data.destroy();
-        } catch (e) {}
-      }
-
-      if (fileSizeMb) data.file_size_mb = parseFloat(fileSizeMb);
     }
 
     return res.json(data);
@@ -74,6 +57,11 @@ app.get('/api/download', async (req, res) => {
     });
   }
 });
+
+function extractVideoId(url) {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
 
 app.listen(PORT, () => {
   console.log(`✅ Server berjalan di http://localhost:${PORT}`);
