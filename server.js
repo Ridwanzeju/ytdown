@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// API proxy endpoint — hindari CORS + ambil ukuran file real
+// API proxy endpoint
 app.get('/api/download', async (req, res) => {
   const { url, quality = '720' } = req.query;
 
@@ -21,31 +21,48 @@ app.get('/api/download', async (req, res) => {
   try {
     const apiUrl = 'https://api.sonzaix.indevs.in/youtube/download';
     const response = await axios.get(apiUrl, {
-      params: {
-        url,
-        format: 'mp4',
-        quality,
-        audioBitrate: '128',
-        vCodec: 'h264',
-      },
+      params: { url, format: 'mp4', quality, audioBitrate: '128', vCodec: 'h264' },
       timeout: 15000,
     });
 
     const data = response.data;
 
-    // Cek ukuran file real dari download_link via HEAD request
+    // Coba ambil ukuran file real
     if (data.download_link) {
+      let fileSizeMb = null;
+
+      // Cara 1: HEAD request
       try {
-        const headRes = await axios.head(data.download_link, { timeout: 8000 });
-        const contentLength = headRes.headers['content-length'];
-        if (contentLength) {
-          const mb = (parseInt(contentLength) / (1024 * 1024)).toFixed(1);
-          data.file_size_mb = parseFloat(mb);
-        }
-      } catch (headErr) {
-        // Kalau HEAD gagal, tidak apa-apa, lanjut tanpa ukuran
-        console.log('HEAD request gagal:', headErr.message);
+        const headRes = await axios.head(data.download_link, {
+          timeout: 8000,
+          headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
+        const cl = headRes.headers['content-length'];
+        if (cl) fileSizeMb = (parseInt(cl) / (1024 * 1024)).toFixed(1);
+      } catch (e) {}
+
+      // Cara 2: GET dengan Range jika HEAD gagal
+      if (!fileSizeMb) {
+        try {
+          const rangeRes = await axios.get(data.download_link, {
+            timeout: 8000,
+            headers: { 'Range': 'bytes=0-0', 'User-Agent': 'Mozilla/5.0' },
+            responseType: 'stream'
+          });
+          // Cek Content-Range: bytes 0-0/TOTAL
+          const cr = rangeRes.headers['content-range'];
+          if (cr) {
+            const match = cr.match(/\/(\d+)$/);
+            if (match) fileSizeMb = (parseInt(match[1]) / (1024 * 1024)).toFixed(1);
+          }
+          // Atau content-length di response
+          const cl = rangeRes.headers['content-length'];
+          if (!fileSizeMb && cl) fileSizeMb = (parseInt(cl) / (1024 * 1024)).toFixed(1);
+          rangeRes.data.destroy();
+        } catch (e) {}
       }
+
+      if (fileSizeMb) data.file_size_mb = parseFloat(fileSizeMb);
     }
 
     return res.json(data);
