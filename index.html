@@ -337,6 +337,7 @@
       <div class="video-meta">
         <div class="video-title" id="vid-title">—</div>
         <div class="video-channel" id="vid-channel">—</div>
+        <div id="vid-size" style="margin-top:6px;font-size:12px;color:#30d158;display:none;">📦 <span id="size-text">—</span></div>
       </div>
     </div>
     <a class="btn-download" id="btn-dl" href="#" target="_blank" rel="noopener">
@@ -390,7 +391,7 @@
     }
 
     const encodedUrl = encodeURIComponent(urlInput);
-    const apiUrl = `https://api.sonzaix.indevs.in/youtube/download?url=${encodedUrl}&format=mp4&quality=${selectedQuality}&audioBitrate=128&vCodec=h264`;
+    const apiUrl = `/api/download?url=${encodedUrl}&quality=${selectedQuality}`;
 
     btn.disabled = true;
     statusEl.style.display = 'block';
@@ -407,6 +408,16 @@
       document.getElementById('vid-channel').textContent = data.channel || 'Channel tidak diketahui';
       document.getElementById('quality-badge').textContent = selectedQuality + 'p';
       document.getElementById('btn-dl').href = data.download_link;
+
+      // Tampilkan ukuran file real dari backend
+      const sizeEl = document.getElementById('vid-size');
+      const sizeTxt = document.getElementById('size-text');
+      if (data.file_size_mb) {
+        sizeTxt.textContent = data.file_size_mb + ' MB';
+        sizeEl.style.display = 'block';
+      } else {
+        sizeEl.style.display = 'none';
+      }
 
       resultEl.style.display = 'block';
     } catch (err) {
