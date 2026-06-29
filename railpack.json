@@ -7,7 +7,6 @@
   },
   "buildAptPackages": ["ffmpeg"],
   "deploy": {
-    "aptPackages": ["ffmpeg"],
-    "startCommand": "pip install --break-system-packages -U yt-dlp && node server.js"
+    "aptPackages": ["ffmpeg"]
   }
 }
