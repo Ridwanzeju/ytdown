@@ -60,19 +60,28 @@ app.get('/api/youtube/download', async (req, res) => {
       apiUrl = `https://api.sonzaix.indevs.in/youtube/download?url=${encodeURIComponent(url)}&format=mp4&quality=${quality}&audioBitrate=128&vCodec=h264`;
     }
 
+    // Step 1: Sonzai API hanya mengembalikan JSON berisi link file asli (download_link),
+    // BUKAN file langsung. Jadi kita harus ambil JSON-nya dulu.
     const apiRes = await fetch(apiUrl);
+    const apiData = await apiRes.json();
 
-    if (!apiRes.ok || !apiRes.body) {
-      return res.status(500).json({ status: 'error', message: 'Gagal mengambil file dari penyedia. Coba lagi nanti.' });
+    if (!apiData || apiData.status !== 'success' || !apiData.download_link) {
+      return res.status(500).json({ status: 'error', message: 'Gagal mengambil link download. Coba lagi nanti.' });
+    }
+
+    // Step 2: fetch file asli dari download_link, lalu stream ke client
+    const fileRes = await fetch(apiData.download_link);
+
+    if (!fileRes.ok || !fileRes.body) {
+      return res.status(500).json({ status: 'error', message: 'Gagal mengunduh file dari sumber.' });
     }
 
     const ext = format === 'mp3' ? 'mp3' : 'mp4';
-    res.setHeader('Content-Disposition', `attachment; filename="video.${ext}"`);
+    const safeFilename = (apiData.filename || 'video').replace(/[\\/:*?"<>|]/g, '').slice(0, 150);
+    res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}.${ext}"`);
     res.setHeader('Content-Type', format === 'mp3' ? 'audio/mpeg' : 'video/mp4');
 
-    // apiRes.body dari fetch() native adalah WHATWG ReadableStream,
-    // perlu dikonversi ke Node stream dulu sebelum .pipe()
-    const nodeStream = Readable.fromWeb(apiRes.body);
+    const nodeStream = Readable.fromWeb(fileRes.body);
     nodeStream.pipe(res);
 
     nodeStream.on('error', (err) => {
